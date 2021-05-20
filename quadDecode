@@ -1,0 +1,27 @@
+from RPi import GPIO
+from time import sleep
+
+inA = 6
+inB = 5
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(inA, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(inB, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+counter = 0 #initialize counter
+lastState = GPIO.input(inA) #define initial state of "A" signal #should be LOW to start
+
+try:
+    while True:
+        state = GPIO.input(inA)     #check state of the "A" signal
+        bState = GPIO.input(inB)    #check state of the "B" signal
+        if state != lastState and state == 1:      #if  "A" signal has changed, the dial must be rotating
+            if bState != state:      #if "B" is unequal to "A" we are moving counterclockwise
+                counter = counter - 1   #because we're moving counterclockwise, subtract
+            elif bState == state:
+                counter = counter + 1   #if we're moving clockwise, add
+            print(counter)  #display new counter
+        lastState = state   #update the state of the "A" signal
+        sleep(0.01) #stop and think :)
+finally:
+    GPIO.cleanup()
